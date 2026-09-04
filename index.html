@@ -536,6 +536,43 @@
   .plan li { font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
   .plan li::before { content: "—"; color: var(--accent); flex: none; }
 
+  /* ── faq ───────────────────────────────────────────────── */
+  .faqlist { border-top: 1px solid var(--border); max-width: 760px; }
+  .faqlist details {
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+  }
+  .faqlist summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    list-style: none;
+  }
+  .faqlist summary::-webkit-details-marker { display: none; }
+  .faqlist summary::after {
+    content: "+";
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--accent);
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform .2s ease;
+    flex: none;
+  }
+  .faqlist details[open] summary::after { transform: rotate(45deg); }
+  .faqlist details p {
+    margin-top: 12px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    max-width: 62ch;
+  }
+  .faqlist summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
   /* ── contact / footer ──────────────────────────────────── */
   .contact {
     background: var(--surface);
@@ -596,6 +633,7 @@
       <a href="#services">Ce que je fais</a>
       <a href="#preuve">Preuve</a>
       <a href="#tarifs">Tarifs</a>
+      <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
     </nav>
   </div>
@@ -614,7 +652,7 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.001-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.955 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
           Contacter sur Discord
         </a>
-        <span class="copy-note">Cailløux ϟ · sur Discord</span>
+        <span class="copy-note">Cailløux ϟ · réponse sous 24h</span>
       </div>
 
       <div class="credlist">
@@ -774,6 +812,7 @@
         <p class="price-sub">notif, welcome, tickets...</p>
         <p class="desc">Une seule fonctionnalité, bien faite. Livrée, testée, expliquée.</p>
         <ul>
+          <li><strong>Livré sous 3 à 5 jours</strong></li>
           <li>Code livré et documenté</li>
           <li>1 aller-retour de correction inclus</li>
         </ul>
@@ -785,6 +824,7 @@
         <p class="price-sub">selon le nombre de fonctionnalités</p>
         <p class="desc">Plusieurs fonctionnalités qui se parlent entre elles, pensées ensemble plutôt qu'empilées. Devis après discussion.</p>
         <ul>
+          <li><strong>Délai fixé après discussion</strong></li>
           <li>Fonctionnalités combinées</li>
           <li>État persistant en base</li>
           <li>1 mois de suivi inclus</li>
@@ -797,10 +837,39 @@
         <p class="price-sub">à partir de</p>
         <p class="desc">Je garde ton bot en ligne, je le mets à jour, je corrige ce qui casse.</p>
         <ul>
+          <li><strong>Réponse sous 24 à 48h</strong></li>
           <li>Hébergement géré</li>
           <li>Corrections incluses</li>
         </ul>
       </article>
+    </div>
+  </section>
+
+  <section id="faq" class="tight">
+    <div class="section-head">
+      <h2>Questions fréquentes</h2>
+    </div>
+    <div class="faqlist">
+      <details>
+        <summary>Pourquoi pas un bot gratuit comme MEE6 ?</summary>
+        <p>Les bots publics font un peu de tout, pour tout le monde — donc rien de précis pour ton serveur. Un bot sur mesure fait exactement ce dont tu as besoin, ni plus ni moins, et tu peux le faire évoluer avec ta communauté.</p>
+      </details>
+      <details>
+        <summary>Combien de temps pour recevoir mon bot ?</summary>
+        <p>3 à 5 jours pour une fonctionnalité unique, en général 1 à 2 semaines pour un bot complet. Je te donne un délai précis après notre discussion — pas une fourchette vague balancée à l'aveugle.</p>
+      </details>
+      <details>
+        <summary>Et si je veux changer un truc après la livraison ?</summary>
+        <p>Un aller-retour de correction est inclus dans chaque formule. Au-delà, ou pour une nouvelle fonctionnalité, on en discute simplement — pas de mauvaise surprise ni de facturation cachée.</p>
+      </details>
+      <details>
+        <summary>L'hébergement est inclus ?</summary>
+        <p>1 mois offert avec un bot sur mesure. Ensuite, tu peux reprendre l'hébergement toi-même (je t'explique comment) ou passer sur la formule Suivi &amp; hébergement — à toi de voir.</p>
+      </details>
+      <details>
+        <summary>Comment je paye ?</summary>
+        <p>On en discute directement sur Discord une fois le besoin clair — je m'adapte à ce qui est simple pour toi.</p>
+      </details>
     </div>
   </section>
 
@@ -815,7 +884,7 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.001-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.955 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
           Contacter sur Discord
         </a>
-        <span class="copy-note">Cailløux ϟ · sur Discord</span>
+        <span class="copy-note">Cailløux ϟ · réponse sous 24h</span>
       </div>
     </div>
   </section>
