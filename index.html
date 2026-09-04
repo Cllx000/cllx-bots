@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cllx Bots — bots Discord sur mesure</title>
+<meta name="description" content="Développement et hébergement de bots Discord sur mesure : accueil personnalisé, notifications Twitch/YouTube, tickets. Devis fixe, suivi inclus.">
+<meta property="og:title" content="Cllx Bots — bots Discord sur mesure">
+<meta property="og:description" content="Développement et hébergement de bots Discord sur mesure : accueil personnalisé, notifications Twitch/YouTube, tickets. Devis fixe, suivi inclus.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light dark;
+    --ground: #faf9fc;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --ink: #15131f;
+    --ink-soft: #4a4459;
+    --ink-faint: #85809a;
+    --border: #e4e1ed;
+    --border-soft: #edebf3;
+    --accent: #6d5ef5;
+    --accent-ink: #ffffff;
+    --accent-soft: #efebff;
+    --accent-soft-ink: #4b3ecb;
+    --status-on: #1e9e63;
+    --status-on-soft: #e5f6ee;
+    --chip-bg: #f1effa;
+    --shadow: 0 1px 2px rgba(21,19,31,.04), 0 12px 32px -16px rgba(21,19,31,.16);
+    --shadow-lift: 0 4px 10px rgba(21,19,31,.05), 0 24px 48px -20px rgba(109,94,245,.28);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0c0b14;
+      --surface: #15131f;
+      --surface-raised: #1a1828;
+      --ink: #f1effa;
+      --ink-soft: #a79fc2;
+      --ink-faint: #6d6684;
+      --border: #2a2740;
+      --border-soft: #211f33;
+      --accent: #9483ff;
+      --accent-ink: #0c0b14;
+      --accent-soft: #221d3d;
+      --accent-soft-ink: #b3a6ff;
+      --status-on: #3fd68e;
+      --status-on-soft: #123626;
+      --chip-bg: #1b1830;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -16px rgba(0,0,0,.5);
+      --shadow-lift: 0 4px 10px rgba(0,0,0,.35), 0 28px 56px -20px rgba(148,131,255,.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0c0b14;
+    --surface: #15131f;
+    --surface-raised: #1a1828;
+    --ink: #f1effa;
+    --ink-soft: #a79fc2;
+    --ink-faint: #6d6684;
+    --border: #2a2740;
+    --border-soft: #211f33;
+    --accent: #9483ff;
+    --accent-ink: #0c0b14;
+    --accent-soft: #221d3d;
+    --accent-soft-ink: #b3a6ff;
+    --status-on: #3fd68e;
+    --status-on-soft: #123626;
+    --chip-bg: #1b1830;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -16px rgba(0,0,0,.5);
+    --shadow-lift: 0 4px 10px rgba(0,0,0,.35), 0 28px 56px -20px rgba(148,131,255,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--ground); }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img { max-width: 100%; }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent-soft-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── top bar ───────────────────────────────────────────── */
+  header.top {
+    padding: 22px 0 0;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Unbounded", "Hanken Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -.01em;
+  }
+  .brand .dot {
+    width: 9px; height: 9px; border-radius: 3px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    flex: none;
+  }
+  nav.toplinks {
+    display: flex;
+    gap: 28px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  nav.toplinks a { color: inherit; text-decoration: none; }
+  nav.toplinks a:hover { color: var(--ink); }
+
+  /* ── hero ──────────────────────────────────────────────── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 56px;
+    align-items: center;
+    padding: 72px 0 84px;
+  }
+  .hero h1 {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 800;
+    font-size: clamp(34px, 4.6vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -.015em;
+    margin: 18px 0 20px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .hero .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+  .hero .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: "Hanken Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 22px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: var(--shadow);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-lift); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary svg { flex: none; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .copy-note {
+    font-size: 13px;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .copy-note.ok { color: var(--status-on); }
+
+  .credlist {
+    display: flex;
+    gap: 22px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+  .credlist div { display: flex; flex-direction: column; gap: 3px; }
+  .credlist .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .credlist .lbl {
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+
+  /* ── hero mock message ────────────────────────────────── */
+  .mockmsg {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+  }
+  .mockmsg-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .mockmsg-avatar {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(155deg, var(--accent), #b6acff 130%);
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+  }
+  .mockmsg-avatar svg { width: 18px; height: 18px; color: var(--accent-ink); }
+  .mockmsg-name { font-weight: 700; font-size: 14.5px; }
+  .mockmsg-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 4px;
+    padding: 1.5px 5px;
+    letter-spacing: .02em;
+  }
+  .mockmsg-time { font-size: 11.5px; color: var(--ink-faint); margin-left: auto; font-family: "IBM Plex Mono", monospace; }
+
+  .embed {
+    border-left: 3px solid var(--accent);
+    background: var(--chip-bg);
+    border-radius: 0 8px 8px 0;
+    padding: 13px 16px 15px;
+  }
+  .embed-eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent-soft-ink);
+    margin: 0 0 6px;
+  }
+  .embed-title { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; }
+  .embed-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+  .embed-fields {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 16px;
+    margin: 14px 0 0;
+    padding: 0;
+  }
+  .embed-fields > div { display: flex; flex-direction: column; gap: 2px; }
+  .embed-fields dt {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ink-faint);
+  }
+  .embed-fields dd { margin: 0; font-size: 13.5px; font-weight: 600; }
+
+  /* ── section shell ─────────────────────────────────────── */
+  section { padding: 64px 0; }
+  section.tight { padding: 44px 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 700;
+    font-size: clamp(24px, 3vw, 30px);
+    letter-spacing: -.01em;
+  }
+  .section-head p { color: var(--ink-soft); font-size: 15px; max-width: 42ch; }
+
+  hr.rule { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
+
+  /* ── services grid ─────────────────────────────────────── */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .svc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px 12px 12px 4px;
+    padding: 22px 24px 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise .5s ease forwards;
+  }
+  .svc:nth-child(1) { animation-delay: .02s; }
+  .svc:nth-child(2) { animation-delay: .08s; }
+  .svc:nth-child(3) { animation-delay: .14s; }
+  .svc:nth-child(4) { animation-delay: .2s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .svc { animation: none; opacity: 1; transform: none; }
+  }
+
+  .svc .embed-eyebrow { color: var(--ink-faint); }
+  .svc h3 { font-size: 17.5px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.005em; }
+  .svc .desc { font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 16px; }
+  .svc dl {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 12px;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .svc dt {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ink-faint);
+    margin-bottom: 2px;
+  }
+  .svc dd { margin: 0; font-size: 13px; font-weight: 600; }
+
+  /* ── case study ────────────────────────────────────────── */
+  .case {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .case-top {
+    padding: 26px 28px 22px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .case-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--status-on-soft);
+    color: var(--status-on);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    padding: 4px 10px 4px 8px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .case-badge .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--status-on);
+    box-shadow: 0 0 0 0 var(--status-on);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-on) 55%, transparent); }
+    70% { box-shadow: 0 0 0 7px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+
+  .case-top h3 {
+    font-family: "Unbounded", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -.01em;
+  }
+  .case-top p { font-size: 15px; line-height: 1.65; color: var(--ink-soft); max-width: 64ch; }
+
+  .case-fields {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 20px 28px;
+  }
+  .case-fields > div {
+    padding: 4px 20px;
+    border-left: 1px solid var(--border-soft);
+  }
+  .case-fields > div:first-child { border-left: none; padding-left: 0; }
+  .case-fields dt {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ink-faint);
+    margin-bottom: 5px;
+  }
+  .case-fields dd { margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.4; }
+
+  /* ── différenciation ──────────────────────────────────────── */
+  .diffs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .diff {
+    padding: 28px 28px 28px 0;
+    border-left: 1px solid var(--border-soft);
+    margin-left: 28px;
+  }
+  .diff:first-child { border-left: none; margin-left: 0; padding-left: 0; }
+  .diff .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: .01em;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .diff p { font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+  .diff p strong { color: var(--ink); font-weight: 700; }
+
+  /* ── process ───────────────────────────────────────────── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .step {
+    padding: 0 20px 0 0;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    right: 0;
+    width: 20px;
+    height: 1px;
+    background: var(--border);
+  }
+  .step .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+
+  /* ── pricing ───────────────────────────────────────────── */
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+  .plan {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .plan.featured {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lift);
+    background: linear-gradient(180deg, var(--accent-soft) 0%, var(--surface) 140px);
+    transform: translateY(-6px);
+  }
+  .plan-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .plan h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .plan .price {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .plan .price span { font-size: 13px; color: var(--ink-faint); font-weight: 500; }
+  .plan .price-sub { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 18px; }
+  .plan .desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; flex: 1; }
+  .plan ul { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .plan li { font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
+  .plan li::before { content: "—"; color: var(--accent); flex: none; }
+
+  /* ── contact / footer ──────────────────────────────────── */
+  .contact {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 46px 48px;
+    display: grid;
+    grid-template-columns: 1.2fr auto;
+    align-items: center;
+    gap: 32px;
+  }
+  .contact h2 {
+    font-family: "Unbounded", sans-serif;
+    font-size: clamp(22px, 2.8vw, 28px);
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 10px;
+  }
+  .contact p { color: var(--ink-soft); font-size: 15px; max-width: 44ch; }
+  .contact-box { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+
+  footer {
+    padding: 40px 0 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  footer .brand { font-size: 14px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-top: 44px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .case-fields { grid-template-columns: 1fr; gap: 14px; }
+    .case-fields > div { border-left: none; padding-left: 0; padding-top: 10px; border-top: 1px solid var(--border-soft); }
+    .case-fields > div:first-child { border-top: none; padding-top: 4px; }
+    .diffs { grid-template-columns: 1fr; }
+    .diff { border-left: none; margin-left: 0; padding: 22px 0; border-top: 1px solid var(--border-soft); }
+    .diff:first-child { border-top: none; padding-top: 0; }
+    .steps { grid-template-columns: 1fr 1fr; row-gap: 26px; }
+    .step:nth-child(2)::after { display: none; }
+    .plans { grid-template-columns: 1fr; }
+    .plan.featured { transform: none; }
+    .contact { grid-template-columns: 1fr; text-align: left; padding: 32px 26px; }
+    .contact-box { align-items: flex-start; }
+    nav.toplinks { display: none; }
+    .embed-fields { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand"><span class="dot"></span> Cllx Bots</div>
+    <nav class="toplinks">
+      <a href="#services">Ce que je fais</a>
+      <a href="#preuve">Preuve</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">/nouveau-bot --pour "ton serveur"</span>
+      <h1>Un bot Discord pensé pour ton serveur.<br><em>Pas un template recyclé.</em></h1>
+      <p class="lede">Je développe et j'héberge des bots sur mesure&nbsp;: accueil des membres, notifications automatiques, tickets de support. Codé pour toi, maintenu par moi.</p>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://discord.com/users/875529546689036288" target="_blank" rel="noopener noreferrer">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.001-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.955 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
+          Contacter sur Discord
+        </a>
+        <span class="copy-note">Cailløux ϟ · sur Discord</span>
+      </div>
+
+      <div class="credlist">
+        <div><span class="num">6 mois</span><span class="lbl">d'expérience en production continue</span></div>
+        <div><span class="num">2</span><span class="lbl">intégrations API actives (Twitch, YouTube)</span></div>
+        <div><span class="num mono">Postgres</span><span class="lbl">état persistant, survit aux redéploiements</span></div>
+      </div>
+    </div>
+
+    <div class="mockmsg">
+      <div class="mockmsg-head">
+        <div class="mockmsg-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+        </div>
+        <span class="mockmsg-name">TonBot</span>
+        <span class="mockmsg-tag">BOT</span>
+        <span class="mockmsg-time">aujourd'hui à 21:04</span>
+      </div>
+      <div class="embed">
+        <p class="embed-eyebrow">Nouvelle vidéo</p>
+        <p class="embed-title">Une nouvelle vidéo vient de sortir 🎬</p>
+        <p class="embed-desc">Annoncée automatiquement, dès la publication — aucune action manuelle.</p>
+        <dl class="embed-fields">
+          <div><dt>Source</dt><dd>YouTube</dd></div>
+          <div><dt>Délai</dt><dd>&lt; 2 min</dd></div>
+          <div><dt>Doublons</dt><dd>Bloqués</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="services">
+    <div class="section-head">
+      <h2>Ce que je construis</h2>
+      <p>Quatre briques que je maîtrise en profondeur — combinables selon ton serveur.</p>
+    </div>
+    <div class="grid2">
+      <article class="svc">
+        <p class="embed-eyebrow">Accueil</p>
+        <h3>Bienvenue &amp; départs personnalisés</h3>
+        <p class="desc">Une bannière générée à la volée avec l'avatar du membre, à l'arrivée comme au départ. Pas une image statique — un vrai rendu, à chaque fois.</p>
+        <dl>
+          <div><dt>Format</dt><dd>PNG généré</dd></div>
+          <div><dt>Déclencheur</dt><dd>En direct</dd></div>
+          <div><dt>Techno</dt><dd>Pillow (Python)</dd></div>
+        </dl>
+      </article>
+      <article class="svc">
+        <p class="embed-eyebrow">Notifications</p>
+        <h3>Alertes Twitch &amp; YouTube automatiques</h3>
+        <p class="desc">Le bot surveille ta chaîne et ton stream, poste tout seul dès qu'il se passe quelque chose — sans y penser, sans doublon.</p>
+        <dl>
+          <div><dt>Sources</dt><dd>Twitch, YouTube</dd></div>
+          <div><dt>Fréquence</dt><dd>Configurable</dd></div>
+          <div><dt>Anti-doublon</dt><dd>Intégré</dd></div>
+        </dl>
+      </article>
+      <article class="svc">
+        <p class="embed-eyebrow">Support</p>
+        <h3>Système de tickets</h3>
+        <p class="desc">Un bouton, un salon privé créé à la demande, fermeture en un clic. Pour le support ou les demandes de ta communauté.</p>
+        <dl>
+          <div><dt>Ouverture</dt><dd>Bouton persistant</dd></div>
+          <div><dt>Visibilité</dt><dd>Privée</dd></div>
+          <div><dt>Fermeture</dt><dd>1 clic</dd></div>
+        </dl>
+      </article>
+      <article class="svc">
+        <p class="embed-eyebrow">Infra</p>
+        <h3>Hébergement &amp; fiabilité</h3>
+        <p class="desc">Le bot tourne en continu, redémarre proprement, et garde son état même après un redéploiement — pas de bot qui "oublie" tout au reboot.</p>
+        <dl>
+          <div><dt>Déploiement</dt><dd>Continu</dd></div>
+          <div><dt>État</dt><dd>Persistant</dd></div>
+          <div><dt>Suivi</dt><dd>Inclus</dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section id="preuve" class="tight">
+    <div class="section-head">
+      <h2>Preuve, pas promesse</h2>
+      <p>Un bot que j'ai construit et que je maintiens réellement, pas une maquette.</p>
+    </div>
+    <div class="case">
+      <div class="case-top">
+        <span class="case-badge"><span class="pulse"></span>en production</span>
+        <h3>Bot communautaire — étude de cas</h3>
+        <p>Développé et maintenu pour un serveur Discord actif&nbsp;: accueil personnalisé des nouveaux membres, notifications automatiques Twitch et YouTube, système de tickets de support. En production depuis mars 2026, avec un vrai historique de maintenance — dont la correction d'un bug de persistance qui aurait pu spammer le salon à chaque redémarrage du bot.</p>
+      </div>
+      <dl class="case-fields">
+        <div><dt>Stack</dt><dd>Python · discord.py · PostgreSQL</dd></div>
+        <div><dt>Hébergement</dt><dd>Railway, déploiement continu</dd></div>
+        <div><dt>Intégrations</dt><dd>Twitch API · YouTube Data API</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="diffs">
+      <div class="diff">
+        <span class="tag">01 · Pas un template</span>
+        <p>Chaque bot est écrit pour <strong>ton</strong> serveur, pas un bot générique avec ton logo collé dessus.</p>
+      </div>
+      <div class="diff">
+        <span class="tag">02 · Pas de disparition</span>
+        <p>Suivi inclus après livraison — j'ai déjà corrigé un vrai bug en prod, <strong>des mois</strong> après avoir livré.</p>
+      </div>
+      <div class="diff">
+        <span class="tag">03 · Je connais ce monde</span>
+        <p>Modérateur actif sur un serveur de streameuse au quotidien — je sais ce qui compte <strong>vraiment</strong> pour une communauté.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="section-head">
+      <h2>Comment ça se passe</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <p class="n mono">01</p>
+        <h4>On discute</h4>
+        <p>De ton serveur, de ce qu'il te faut vraiment — pas une liste de fonctionnalités au hasard.</p>
+      </div>
+      <div class="step">
+        <p class="n mono">02</p>
+        <h4>Devis fixe</h4>
+        <p>Un prix avant de commencer. Pas de surprise à la livraison.</p>
+      </div>
+      <div class="step">
+        <p class="n mono">03</p>
+        <h4>Développement</h4>
+        <p>Avec des points d'étape, pas un silence radio de trois semaines.</p>
+      </div>
+      <div class="step">
+        <p class="n mono">04</p>
+        <h4>Livraison &amp; suivi</h4>
+        <p>Le bot tourne, et je reste joignable si quelque chose doit être ajusté.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tarifs">
+    <div class="section-head">
+      <h2>Tarifs indicatifs</h2>
+      <p>Des fourchettes de départ — le prix exact dépend toujours de ce que tu me décris.</p>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <p class="plan-tag">Fonctionnalité unique</p>
+        <h3>Une brique précise</h3>
+        <p class="price">25€ <span>+</span></p>
+        <p class="price-sub">notif, welcome, tickets...</p>
+        <p class="desc">Une seule fonctionnalité, bien faite. Livrée, testée, expliquée.</p>
+        <ul>
+          <li>Code livré et documenté</li>
+          <li>1 aller-retour de correction inclus</li>
+        </ul>
+      </article>
+      <article class="plan featured">
+        <p class="plan-tag">Le plus demandé</p>
+        <h3>Bot sur mesure</h3>
+        <p class="price">90€ <span>+</span></p>
+        <p class="price-sub">selon le nombre de fonctionnalités</p>
+        <p class="desc">Plusieurs fonctionnalités qui se parlent entre elles, pensées ensemble plutôt qu'empilées. Devis après discussion.</p>
+        <ul>
+          <li>Fonctionnalités combinées</li>
+          <li>État persistant en base</li>
+          <li>1 mois de suivi inclus</li>
+        </ul>
+      </article>
+      <article class="plan">
+        <p class="plan-tag">Récurrent</p>
+        <h3>Suivi &amp; hébergement</h3>
+        <p class="price">12€ <span>/mois</span></p>
+        <p class="price-sub">à partir de</p>
+        <p class="desc">Je garde ton bot en ligne, je le mets à jour, je corrige ce qui casse.</p>
+        <ul>
+          <li>Hébergement géré</li>
+          <li>Corrections incluses</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section id="contact" class="tight">
+    <div class="contact">
+      <div>
+        <h2>Une idée de bot pour ton serveur ?</h2>
+        <p>Décris-moi ce que tu veux, je te réponds avec un vrai plan et un prix — pas un pavé de conditions.</p>
+      </div>
+      <div class="contact-box">
+        <a class="btn btn-primary" href="https://discord.com/users/875529546689036288" target="_blank" rel="noopener noreferrer">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.076.076 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.001-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.955 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
+          Contacter sur Discord
+        </a>
+        <span class="copy-note">Cailløux ϟ · sur Discord</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand"><span class="dot" style="width:7px;height:7px;background:var(--accent);display:inline-block;transform:rotate(45deg);border-radius:2px;margin-right:8px;vertical-align:middle;"></span>Cllx Bots</div>
+    <div>Bots Discord sur mesure — développés et hébergés par Cailløux ϟ</div>
+  </footer>
+
+</main>
+</body>
+</html>
