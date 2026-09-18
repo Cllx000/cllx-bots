@@ -239,45 +239,7 @@
     color: var(--ink-faint);
   }
 
-  /* ── hero mock message ────────────────────────────────── */
-  .mockmsg {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 18px 16px;
-    box-shadow: var(--shadow);
-  }
-  .mockmsg-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .mockmsg-avatar {
-    width: 34px; height: 34px; border-radius: 9px;
-    background: linear-gradient(155deg, var(--accent), #b6acff 130%);
-    display: flex; align-items: center; justify-content: center;
-    flex: none;
-  }
-  .mockmsg-avatar svg { width: 18px; height: 18px; color: var(--accent-ink); }
-  .mockmsg-name { font-weight: 700; font-size: 14.5px; }
-  .mockmsg-tag {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 10.5px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    border-radius: 4px;
-    padding: 1.5px 5px;
-    letter-spacing: .02em;
-  }
-  .mockmsg-time { font-size: 11.5px; color: var(--ink-faint); margin-left: auto; font-family: "IBM Plex Mono", monospace; }
-
-  .embed {
-    border-left: 3px solid var(--accent);
-    background: var(--chip-bg);
-    border-radius: 0 8px 8px 0;
-    padding: 13px 16px 15px;
-  }
+  /* ── captures réelles ─────────────────────────────────── */
   .embed-eyebrow {
     font-family: "IBM Plex Mono", monospace;
     font-size: 11px;
@@ -286,24 +248,43 @@
     color: var(--accent-soft-ink);
     margin: 0 0 6px;
   }
-  .embed-title { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; }
-  .embed-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
-  .embed-fields {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px 16px;
-    margin: 14px 0 0;
-    padding: 0;
+  .proof-frame {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: var(--shadow);
   }
-  .embed-fields > div { display: flex; flex-direction: column; gap: 2px; }
-  .embed-fields dt {
+  .proof-frame img {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+  }
+  .proof-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-family: "IBM Plex Mono", monospace;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: .05em;
+    font-size: 11.5px;
     color: var(--ink-faint);
+    margin: 0 0 10px;
   }
-  .embed-fields dd { margin: 0; font-size: 13.5px; font-weight: 600; }
+  .proof-label::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--status-on);
+    flex: none;
+  }
+  .proof-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .proof-gallery .proof-frame:last-child { grid-column: 1 / -1; }
+  .proof-gallery .proof-frame:last-child img { width: auto; max-height: 220px; margin: 0 auto; }
+  .proof-note { font-size: 12.5px; color: var(--ink-soft); margin: 10px 2px 0; line-height: 1.5; }
 
   /* ── section shell ─────────────────────────────────────── */
   section { padding: 64px 0; }
@@ -338,18 +319,9 @@
     border-left: 4px solid var(--accent);
     border-radius: 4px 12px 12px 4px;
     padding: 22px 24px 24px;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: rise .5s ease forwards;
   }
-  .svc:nth-child(1) { animation-delay: .02s; }
-  .svc:nth-child(2) { animation-delay: .08s; }
-  .svc:nth-child(3) { animation-delay: .14s; }
-  .svc:nth-child(4) { animation-delay: .2s; }
-  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
-  @media (prefers-reduced-motion: reduce) {
-    .svc { animation: none; opacity: 1; transform: none; }
-  }
+  .svc:nth-child(2) { border-left-color: var(--status-on); }
+  .svc:nth-child(3) { border-left-style: dashed; }
 
   .svc .embed-eyebrow { color: var(--ink-faint); }
   .svc h3 { font-size: 17.5px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.005em; }
@@ -646,7 +618,8 @@
     .contact { grid-template-columns: 1fr; text-align: left; padding: 32px 26px; }
     .contact-box { align-items: flex-start; }
     nav.toplinks { display: none; }
-    .embed-fields { grid-template-columns: 1fr 1fr; }
+    .proof-gallery { grid-template-columns: 1fr; }
+    .proof-gallery .proof-frame:last-child img { max-height: none; }
   }
 </style>
 </head>
@@ -669,9 +642,9 @@
 
   <section class="hero">
     <div>
-      <span class="eyebrow">/nouveau-bot --pour "ton serveur"</span>
-      <h1>Un bot Discord pensé pour ton serveur.<br><em>Pas un template recyclé.</em></h1>
-      <p class="lede">Je développe et j'héberge des bots sur mesure&nbsp;: accueil des membres, notifications automatiques, tickets de support. Codé pour toi, maintenu par moi.</p>
+      <span class="eyebrow">Étudiant en info · bots Discord sur mesure</span>
+      <h1>Un bot Discord, écrit pour <em>ton</em> serveur.</h1>
+      <p class="lede">Modérateur au quotidien sur un serveur Discord actif, je code des bots pour de vraies communautés — pas des démos. Accueil des membres, notifications automatiques, tickets de support&nbsp;: je construis ce dont ton serveur a besoin, et je reste joignable après la livraison.</p>
 
       <div class="cta-row">
         <a class="btn btn-primary" href="https://discord.com/users/875529546689036288" target="_blank" rel="noopener noreferrer">
@@ -688,25 +661,10 @@
       </div>
     </div>
 
-    <div class="mockmsg">
-      <div class="mockmsg-head">
-        <div class="mockmsg-avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
-        </div>
-        <span class="mockmsg-name">TonBot</span>
-        <span class="mockmsg-tag">BOT</span>
-        <span class="mockmsg-time">aujourd'hui à 21:04</span>
-      </div>
-      <div class="embed">
-        <p class="embed-eyebrow">Nouvelle vidéo</p>
-        <p class="embed-title">Une nouvelle vidéo vient de sortir 🎬</p>
-        <p class="embed-desc">Annoncée automatiquement, dès la publication — aucune action manuelle.</p>
-        <dl class="embed-fields">
-          <div><dt>Source</dt><dd>YouTube</dd></div>
-          <div><dt>Délai</dt><dd>&lt; 2 min</dd></div>
-          <div><dt>Doublons</dt><dd>Bloqués</dd></div>
-        </dl>
-      </div>
+    <div class="proof-frame">
+      <p class="proof-label">capture réelle · aucune retouche</p>
+      <img src="assets/proof/welcome.png" alt="Message d'accueil généré automatiquement par un bot en production, avec une bannière à l'avatar du membre" loading="lazy" width="870" height="407">
+      <p class="proof-note">Message posté par un bot que j'ai construit — pas une maquette Figma.</p>
     </div>
   </section>
 
@@ -763,8 +721,8 @@
 
   <section id="preuve" class="tight">
     <div class="section-head">
-      <h2>Preuve, pas promesse</h2>
-      <p>Un bot que j'ai construit et que je maintiens réellement, pas une maquette.</p>
+      <h2>La preuve, en captures d'écran</h2>
+      <p>Trois messages postés par un bot que j'ai construit et que je maintiens encore aujourd'hui.</p>
     </div>
     <div class="case">
       <div class="case-top">
@@ -778,16 +736,31 @@
         <div><dt>Intégrations</dt><dd>Twitch API · YouTube Data API</dd></div>
       </dl>
     </div>
+
+    <div class="proof-gallery">
+      <div class="proof-frame">
+        <p class="proof-label">arrivée d'un membre</p>
+        <img src="assets/proof/welcome.png" alt="Embed d'accueil avec bannière générée à l'avatar du membre" loading="lazy" width="870" height="407">
+      </div>
+      <div class="proof-frame">
+        <p class="proof-label">notification YouTube auto</p>
+        <img src="assets/proof/youtube.png" alt="Notification automatique postée dans Discord dès la publication d'une vidéo YouTube" loading="lazy" width="1010" height="1040">
+      </div>
+      <div class="proof-frame">
+        <p class="proof-label">panneau de tickets</p>
+        <img src="assets/proof/tickets.png" alt="Panneau de support avec bouton pour ouvrir un ticket" loading="lazy" width="1220" height="310">
+      </div>
+    </div>
   </section>
 
   <section class="tight">
     <div class="diffs">
       <div class="diff">
-        <span class="tag">01 · Pas un template</span>
+        <span class="tag">01 · Sur-mesure</span>
         <p>Chaque bot est écrit pour <strong>ton</strong> serveur, pas un bot générique avec ton logo collé dessus.</p>
       </div>
       <div class="diff">
-        <span class="tag">02 · Pas de disparition</span>
+        <span class="tag">02 · Je reste après livraison</span>
         <p>Suivi inclus après livraison — j'ai déjà corrigé un vrai bug en prod, <strong>des mois</strong> après avoir livré.</p>
       </div>
       <div class="diff">
