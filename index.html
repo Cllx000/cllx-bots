@@ -8,72 +8,32 @@
 <meta property="og:title" content="Cllx Bots — bots Discord sur mesure">
 <meta property="og:description" content="Développement et hébergement de bots Discord sur mesure : accueil personnalisé, notifications Twitch/YouTube, tickets. Devis fixe, suivi inclus.">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#08070d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    color-scheme: light dark;
-    --ground: #faf9fc;
-    --surface: #ffffff;
-    --surface-raised: #ffffff;
-    --ink: #15131f;
-    --ink-soft: #4a4459;
-    --ink-faint: #85809a;
-    --border: #e4e1ed;
-    --border-soft: #edebf3;
-    --accent: #6d5ef5;
-    --accent-ink: #ffffff;
-    --accent-soft: #efebff;
-    --accent-soft-ink: #4b3ecb;
-    --status-on: #1e9e63;
-    --status-on-soft: #e5f6ee;
-    --chip-bg: #f1effa;
-    --shadow: 0 1px 2px rgba(21,19,31,.04), 0 12px 32px -16px rgba(21,19,31,.16);
-    --shadow-lift: 0 4px 10px rgba(21,19,31,.05), 0 24px 48px -20px rgba(109,94,245,.28);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #0c0b14;
-      --surface: #15131f;
-      --surface-raised: #1a1828;
-      --ink: #f1effa;
-      --ink-soft: #a79fc2;
-      --ink-faint: #6d6684;
-      --border: #2a2740;
-      --border-soft: #211f33;
-      --accent: #9483ff;
-      --accent-ink: #0c0b14;
-      --accent-soft: #221d3d;
-      --accent-soft-ink: #b3a6ff;
-      --status-on: #3fd68e;
-      --status-on-soft: #123626;
-      --chip-bg: #1b1830;
-      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -16px rgba(0,0,0,.5);
-      --shadow-lift: 0 4px 10px rgba(0,0,0,.35), 0 28px 56px -20px rgba(148,131,255,.35);
-    }
-  }
-
-  :root[data-theme="dark"] {
-    --ground: #0c0b14;
-    --surface: #15131f;
-    --surface-raised: #1a1828;
-    --ink: #f1effa;
-    --ink-soft: #a79fc2;
-    --ink-faint: #6d6684;
-    --border: #2a2740;
-    --border-soft: #211f33;
+    color-scheme: dark;
+    --ground: #08070d;
+    --surface: rgba(255,255,255,.035);
+    --surface-solid: #121019;
+    --ink: #f5f3fb;
+    --ink-soft: #ada5c9;
+    --ink-faint: #6f6788;
+    --border: rgba(255,255,255,.1);
+    --border-soft: rgba(255,255,255,.06);
     --accent: #9483ff;
-    --accent-ink: #0c0b14;
-    --accent-soft: #221d3d;
-    --accent-soft-ink: #b3a6ff;
+    --accent-2: #ff7ad1;
+    --accent-ink: #0a0918;
+    --accent-soft: rgba(148,131,255,.14);
+    --accent-soft-ink: #c3b8ff;
     --status-on: #3fd68e;
-    --status-on-soft: #123626;
-    --chip-bg: #1b1830;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -16px rgba(0,0,0,.5);
-    --shadow-lift: 0 4px 10px rgba(0,0,0,.35), 0 28px 56px -20px rgba(148,131,255,.35);
+    --status-on-soft: rgba(63,214,142,.14);
+    --chip-bg: rgba(255,255,255,.04);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 40px -20px rgba(0,0,0,.6);
+    --glow: 0 24px 60px -24px rgba(148,131,255,.45);
   }
 
   * { box-sizing: border-box; }
@@ -85,10 +45,61 @@
     font-family: "Hanken Grotesk", system-ui, sans-serif;
     margin: 0;
     -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
   }
 
   img { max-width: 100%; }
   ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  /* ── background effects ───────────────────────────────── */
+  .bg-fx {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .bg-fx .dotgrid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.09) 1px, transparent 0);
+    background-size: 26px 26px;
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent 65%);
+    mask-image: linear-gradient(to bottom, black, transparent 65%);
+    opacity: .5;
+  }
+  .bg-fx .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+  }
+  .bg-fx .orb-a { top: -160px; left: -100px; width: 520px; height: 520px; background: radial-gradient(circle, var(--accent), transparent 70%); opacity: .32; }
+  .bg-fx .orb-b { top: 60px; right: -160px; width: 480px; height: 480px; background: radial-gradient(circle, var(--accent-2), transparent 70%); opacity: .22; }
+  .bg-fx .meteor {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: meteor 7s linear infinite;
+  }
+  .bg-fx .meteor::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,.9), transparent);
+    transform: translateY(-50%);
+  }
+  @keyframes meteor {
+    0% { transform: translate(0, 0) rotate(215deg); opacity: 0; }
+    8% { opacity: 1; }
+    65% { opacity: 1; }
+    100% { transform: translate(-620px, 620px) rotate(215deg); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-fx .meteor { display: none; }
+  }
 
   .wrap {
     max-width: 1080px;
@@ -106,13 +117,17 @@
 
   .eyebrow {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 12.5px;
-    letter-spacing: .08em;
+    font-size: 12px;
+    letter-spacing: .07em;
     text-transform: uppercase;
     color: var(--accent-soft-ink);
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(148,131,255,.28);
+    padding: 6px 13px 6px 10px;
+    border-radius: 999px;
   }
   .eyebrow::before {
     content: "";
@@ -120,18 +135,49 @@
     height: 6px;
     border-radius: 50%;
     background: var(--accent);
+    flex: none;
   }
+
+  /* ── gradient-border card base (shared) ───────────────── */
+  .proof-frame, .svc, .plan, .case, .contact {
+    background:
+      linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
+      linear-gradient(135deg, rgba(148,131,255,.5), rgba(255,122,209,.22) 45%, rgba(255,255,255,.05) 100%) border-box;
+    border: 1px solid transparent;
+  }
+
+  /* mouse-tracked spotlight, used on hoverable cards */
+  .spot { position: relative; overflow: hidden; }
+  .spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(148,131,255,.16), transparent 72%);
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+  }
+  .spot:hover::before { opacity: 1; }
 
   /* ── top bar ───────────────────────────────────────────── */
   header.top {
-    padding: 22px 0 0;
+    position: sticky;
+    top: 14px;
+    z-index: 50;
+    padding-top: 14px;
   }
   .top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-soft);
+    gap: 20px;
+    padding: 12px 14px 12px 20px;
+    background: rgba(15,13,22,.72);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: 0 10px 34px -16px rgba(0,0,0,.6);
   }
   .brand {
     display: flex;
@@ -139,23 +185,73 @@
     gap: 10px;
     font-family: "Unbounded", "Hanken Grotesk", sans-serif;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 16.5px;
     letter-spacing: -.01em;
   }
   .brand .dot {
     width: 9px; height: 9px; border-radius: 3px;
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
     transform: rotate(45deg);
     flex: none;
   }
   nav.toplinks {
     display: flex;
-    gap: 28px;
-    font-size: 14.5px;
+    gap: 26px;
+    font-size: 14px;
     color: var(--ink-soft);
   }
-  nav.toplinks a { color: inherit; text-decoration: none; }
+  nav.toplinks a { color: inherit; text-decoration: none; transition: color .15s ease; }
   nav.toplinks a:hover { color: var(--ink); }
+
+  /* ── buttons ───────────────────────────────────────────── */
+  .btn {
+    font-family: "Hanken Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 22px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn-sm { padding: 9px 16px; font-size: 13.5px; border-radius: 999px; }
+  .btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: var(--accent-ink);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset, 0 10px 28px -10px rgba(148,131,255,.6);
+  }
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.4), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s ease;
+  }
+  .btn-primary:hover::after { left: 130%; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255,255,255,.12) inset, 0 14px 34px -10px rgba(148,131,255,.8); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary svg { flex: none; position: relative; }
+  .btn-ghost {
+    background: rgba(255,255,255,.045);
+    border: 1px solid var(--border);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .copy-note {
+    font-size: 13px;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+  }
 
   /* ── hero ──────────────────────────────────────────────── */
   .hero {
@@ -163,7 +259,7 @@
     grid-template-columns: 1.15fr 1fr;
     gap: 56px;
     align-items: center;
-    padding: 72px 0 84px;
+    padding: 76px 0 84px;
   }
   .hero h1 {
     font-family: "Unbounded", sans-serif;
@@ -175,7 +271,10 @@
   }
   .hero h1 em {
     font-style: normal;
-    color: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .hero .lede {
     font-size: 17px;
@@ -190,36 +289,6 @@
     margin-top: 30px;
     flex-wrap: wrap;
   }
-  .btn {
-    font-family: "Hanken Grotesk", sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 22px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    text-decoration: none;
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: var(--accent-ink);
-    box-shadow: var(--shadow);
-  }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-lift); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary svg { flex: none; }
-  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-  .copy-note {
-    font-size: 13px;
-    color: var(--ink-faint);
-    font-family: "IBM Plex Mono", monospace;
-  }
-  .copy-note.ok { color: var(--status-on); }
 
   .credlist {
     display: flex;
@@ -249,32 +318,31 @@
     margin: 0 0 6px;
   }
   .proof-frame {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 14px;
     box-shadow: var(--shadow);
+    transition: transform .25s ease, box-shadow .25s ease;
   }
+  .proof-frame:hover { transform: translateY(-4px); box-shadow: var(--glow); }
   .proof-frame img {
     display: block;
     width: 100%;
-    border-radius: 8px;
+    border-radius: 9px;
     border: 1px solid var(--border-soft);
   }
-  .proof-label {
+  .proof-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin: 0 0 12px 2px;
+  }
+  .proof-bar .dots { display: flex; gap: 5px; }
+  .proof-bar .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-faint); opacity: .45; }
+  .proof-label {
     font-family: "IBM Plex Mono", monospace;
     font-size: 11.5px;
     color: var(--ink-faint);
-    margin: 0 0 10px;
-  }
-  .proof-label::before {
-    content: "";
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--status-on);
-    flex: none;
+    margin: 0;
   }
   .proof-gallery {
     display: grid;
@@ -287,7 +355,7 @@
   .proof-note { font-size: 12.5px; color: var(--ink-soft); margin: 10px 2px 0; line-height: 1.5; }
 
   /* ── section shell ─────────────────────────────────────── */
-  section { padding: 64px 0; }
+  section { padding: 64px 0; position: relative; }
   section.tight { padding: 44px 0; }
   .section-head {
     display: flex;
@@ -307,21 +375,24 @@
 
   hr.rule { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
 
-  /* ── services grid ─────────────────────────────────────── */
-  .grid2 {
+  /* ── services bento grid ──────────────────────────────── */
+  .bento {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(12, 1fr);
     gap: 18px;
   }
+  .bento .svc:nth-child(1) { grid-column: span 7; }
+  .bento .svc:nth-child(2) { grid-column: span 5; }
+  .bento .svc:nth-child(3) { grid-column: span 5; }
+  .bento .svc:nth-child(4) { grid-column: span 7; }
+
   .svc {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    border-radius: 4px 12px 12px 4px;
-    padding: 22px 24px 24px;
+    border-left: 3px solid var(--accent);
+    border-radius: 4px 16px 16px 4px;
+    padding: 24px 26px 26px;
+    transition: transform .25s ease, box-shadow .25s ease;
   }
-  .svc:nth-child(2) { border-left-color: var(--status-on); }
-  .svc:nth-child(3) { border-left-style: dashed; }
+  .svc:hover { transform: translateY(-4px); box-shadow: var(--glow); }
 
   .svc .embed-eyebrow { color: var(--ink-faint); }
   .svc h3 { font-size: 17.5px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.005em; }
@@ -346,9 +417,7 @@
 
   /* ── case study ────────────────────────────────────────── */
   .case {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
     overflow: hidden;
     box-shadow: var(--shadow);
   }
@@ -426,7 +495,7 @@
   .diff .tag {
     font-family: "IBM Plex Mono", monospace;
     font-size: 12px;
-    color: var(--accent);
+    color: var(--accent-soft-ink);
     font-weight: 600;
     letter-spacing: .01em;
     margin-bottom: 12px;
@@ -457,7 +526,7 @@
   .step .n {
     font-family: "IBM Plex Mono", monospace;
     font-size: 13px;
-    color: var(--accent);
+    color: var(--accent-soft-ink);
     font-weight: 600;
     margin-bottom: 12px;
   }
@@ -472,25 +541,28 @@
     align-items: stretch;
   }
   .plan {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 24px 22px;
     display: flex;
     flex-direction: column;
+    transition: transform .25s ease, box-shadow .25s ease;
   }
+  .plan:hover { transform: translateY(-4px); }
   .plan.featured {
-    border-color: var(--accent);
-    box-shadow: var(--shadow-lift);
-    background: linear-gradient(180deg, var(--accent-soft) 0%, var(--surface) 140px);
+    background:
+      linear-gradient(180deg, rgba(148,131,255,.16), var(--surface-solid) 55%) padding-box,
+      linear-gradient(135deg, var(--accent), var(--accent-2)) border-box;
+    border: 1px solid transparent;
+    box-shadow: var(--glow);
     transform: translateY(-6px);
   }
+  .plan.featured:hover { transform: translateY(-10px); }
   .plan-tag {
     font-family: "IBM Plex Mono", monospace;
     font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: var(--accent);
+    color: var(--accent-soft-ink);
     font-weight: 600;
     margin-bottom: 10px;
   }
@@ -506,12 +578,12 @@
   .plan .desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; flex: 1; }
   .plan ul { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
   .plan li { font-size: 13px; display: flex; gap: 8px; align-items: baseline; }
-  .plan li::before { content: "—"; color: var(--accent); flex: none; }
+  .plan li::before { content: "—"; color: var(--accent-soft-ink); flex: none; }
 
   .addon {
     margin-top: 18px;
     border: 1px dashed var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 22px 26px;
     display: flex;
     align-items: center;
@@ -552,7 +624,7 @@
   .faqlist summary::after {
     content: "+";
     font-family: "IBM Plex Mono", monospace;
-    color: var(--accent);
+    color: var(--accent-soft-ink);
     font-size: 21px;
     font-weight: 400;
     line-height: 1;
@@ -571,14 +643,13 @@
 
   /* ── contact / footer ──────────────────────────────────── */
   .contact {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: 20px;
     padding: 46px 48px;
     display: grid;
     grid-template-columns: 1.2fr auto;
     align-items: center;
     gap: 32px;
+    box-shadow: var(--shadow);
   }
   .contact h2 {
     font-family: "Unbounded", sans-serif;
@@ -597,12 +668,22 @@
     align-items: center;
     color: var(--ink-faint);
     font-size: 13px;
+    border-top: 1px solid var(--border-soft);
+    margin-top: 20px;
   }
   footer .brand { font-size: 14px; }
 
+  /* ── scroll reveal ─────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
   @media (max-width: 860px) {
     .hero { grid-template-columns: 1fr; padding-top: 44px; }
-    .grid2 { grid-template-columns: 1fr; }
+    .bento { grid-template-columns: 1fr; }
+    .bento .svc { grid-column: auto !important; }
     .case-fields { grid-template-columns: 1fr; gap: 14px; }
     .case-fields > div { border-left: none; padding-left: 0; padding-top: 10px; border-top: 1px solid var(--border-soft); }
     .case-fields > div:first-child { border-top: none; padding-top: 4px; }
@@ -613,6 +694,7 @@
     .step:nth-child(2)::after { display: none; }
     .plans { grid-template-columns: 1fr; }
     .plan.featured { transform: none; }
+    .plan.featured:hover { transform: translateY(-4px); }
     .addon { flex-direction: column; align-items: flex-start; }
     .addon-price { text-align: left; }
     .contact { grid-template-columns: 1fr; text-align: left; padding: 32px 26px; }
@@ -625,6 +707,17 @@
 </head>
 <body>
 
+<div class="bg-fx" aria-hidden="true">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="dotgrid"></div>
+  <span class="meteor" style="top:6%; left:70%; animation-delay:0s;"></span>
+  <span class="meteor" style="top:2%; left:40%; animation-delay:1.6s;"></span>
+  <span class="meteor" style="top:14%; left:85%; animation-delay:3.1s;"></span>
+  <span class="meteor" style="top:0%; left:55%; animation-delay:4.4s;"></span>
+  <span class="meteor" style="top:10%; left:25%; animation-delay:5.8s;"></span>
+</div>
+
 <header class="top">
   <div class="wrap top-row">
     <div class="brand"><span class="dot"></span> Cllx Bots</div>
@@ -635,6 +728,7 @@
       <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
     </nav>
+    <a class="btn btn-ghost btn-sm" href="https://discord.com/users/875529546689036288" target="_blank" rel="noopener noreferrer">Discord</a>
   </div>
 </header>
 
@@ -661,8 +755,11 @@
       </div>
     </div>
 
-    <div class="proof-frame">
-      <p class="proof-label">capture réelle · aucune retouche</p>
+    <div class="proof-frame spot reveal">
+      <div class="proof-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="proof-label">capture réelle · aucune retouche</span>
+      </div>
       <img src="assets/proof/welcome.png" alt="Message d'accueil généré automatiquement par un bot en production, avec une bannière à l'avatar du membre" loading="lazy" width="870" height="407">
       <p class="proof-note">Message posté par un bot que j'ai construit — pas une maquette Figma.</p>
     </div>
@@ -671,12 +768,12 @@
   <hr class="rule">
 
   <section id="services">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Ce que je construis</h2>
       <p>Quatre briques que je maîtrise en profondeur — combinables selon ton serveur.</p>
     </div>
-    <div class="grid2">
-      <article class="svc">
+    <div class="bento">
+      <article class="svc spot reveal">
         <p class="embed-eyebrow">Accueil</p>
         <h3>Bienvenue &amp; départs personnalisés</h3>
         <p class="desc">Une bannière générée à la volée avec l'avatar du membre, à l'arrivée comme au départ. Pas une image statique — un vrai rendu, à chaque fois.</p>
@@ -686,7 +783,7 @@
           <div><dt>Techno</dt><dd>Pillow (Python)</dd></div>
         </dl>
       </article>
-      <article class="svc">
+      <article class="svc spot reveal">
         <p class="embed-eyebrow">Notifications</p>
         <h3>Alertes Twitch &amp; YouTube automatiques</h3>
         <p class="desc">Le bot surveille ta chaîne et ton stream, poste tout seul dès qu'il se passe quelque chose — sans y penser, sans doublon.</p>
@@ -696,7 +793,7 @@
           <div><dt>Anti-doublon</dt><dd>Intégré</dd></div>
         </dl>
       </article>
-      <article class="svc">
+      <article class="svc spot reveal">
         <p class="embed-eyebrow">Support</p>
         <h3>Système de tickets</h3>
         <p class="desc">Un bouton, un salon privé créé à la demande, fermeture en un clic. Pour le support ou les demandes de ta communauté.</p>
@@ -706,7 +803,7 @@
           <div><dt>Fermeture</dt><dd>1 clic</dd></div>
         </dl>
       </article>
-      <article class="svc">
+      <article class="svc spot reveal">
         <p class="embed-eyebrow">Infra</p>
         <h3>Hébergement &amp; fiabilité</h3>
         <p class="desc">Le bot tourne en continu, redémarre proprement, et garde son état même après un redéploiement — pas de bot qui "oublie" tout au reboot.</p>
@@ -720,11 +817,11 @@
   </section>
 
   <section id="preuve" class="tight">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>La preuve, en captures d'écran</h2>
       <p>Trois messages postés par un bot que j'ai construit et que je maintiens encore aujourd'hui.</p>
     </div>
-    <div class="case">
+    <div class="case spot reveal">
       <div class="case-top">
         <span class="case-badge"><span class="pulse"></span>en production</span>
         <h3>Bot communautaire — étude de cas</h3>
@@ -738,23 +835,32 @@
     </div>
 
     <div class="proof-gallery">
-      <div class="proof-frame">
-        <p class="proof-label">arrivée d'un membre</p>
+      <div class="proof-frame spot reveal">
+        <div class="proof-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="proof-label">arrivée d'un membre</span>
+        </div>
         <img src="assets/proof/welcome.png" alt="Embed d'accueil avec bannière générée à l'avatar du membre" loading="lazy" width="870" height="407">
       </div>
-      <div class="proof-frame">
-        <p class="proof-label">notification YouTube auto</p>
+      <div class="proof-frame spot reveal">
+        <div class="proof-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="proof-label">notification YouTube auto</span>
+        </div>
         <img src="assets/proof/youtube.png" alt="Notification automatique postée dans Discord dès la publication d'une vidéo YouTube" loading="lazy" width="1010" height="1040">
       </div>
-      <div class="proof-frame">
-        <p class="proof-label">panneau de tickets</p>
+      <div class="proof-frame spot reveal">
+        <div class="proof-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="proof-label">panneau de tickets</span>
+        </div>
         <img src="assets/proof/tickets.png" alt="Panneau de support avec bouton pour ouvrir un ticket" loading="lazy" width="1220" height="310">
       </div>
     </div>
   </section>
 
   <section class="tight">
-    <div class="diffs">
+    <div class="diffs reveal">
       <div class="diff">
         <span class="tag">01 · Sur-mesure</span>
         <p>Chaque bot est écrit pour <strong>ton</strong> serveur, pas un bot générique avec ton logo collé dessus.</p>
@@ -771,10 +877,10 @@
   </section>
 
   <section class="tight">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Comment ça se passe</h2>
     </div>
-    <div class="steps">
+    <div class="steps reveal">
       <div class="step">
         <p class="n mono">01</p>
         <h4>On discute</h4>
@@ -799,11 +905,11 @@
   </section>
 
   <section id="tarifs">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Tarifs indicatifs</h2>
       <p>Des fourchettes de départ — le prix exact dépend toujours de ce que tu me décris.</p>
     </div>
-    <div class="plans">
+    <div class="plans reveal">
       <article class="plan">
         <p class="plan-tag">Fonctionnalité unique</p>
         <h3>Une brique précise</h3>
@@ -831,7 +937,7 @@
       </article>
     </div>
 
-    <div class="addon">
+    <div class="addon reveal">
       <div class="addon-label">
         <p class="plan-tag">En option, sur n'importe quelle formule</p>
         <h3>Suivi &amp; hébergement mensuel</h3>
@@ -845,10 +951,10 @@
   </section>
 
   <section id="faq" class="tight">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2>Questions fréquentes</h2>
     </div>
-    <div class="faqlist">
+    <div class="faqlist reveal">
       <details>
         <summary>Pourquoi pas un bot gratuit comme MEE6 ?</summary>
         <p>Les bots publics font un peu de tout, pour tout le monde — donc rien de précis pour ton serveur. Un bot sur mesure fait exactement ce dont tu as besoin, ni plus ni moins, et tu peux le faire évoluer avec ta communauté.</p>
@@ -873,7 +979,7 @@
   </section>
 
   <section id="contact" class="tight">
-    <div class="contact">
+    <div class="contact spot reveal">
       <div>
         <h2>Une idée de bot pour ton serveur ?</h2>
         <p>Décris-moi ce que tu veux, je te réponds avec un vrai plan et un prix — pas un pavé de conditions.</p>
@@ -889,10 +995,41 @@
   </section>
 
   <footer>
-    <div class="brand"><span class="dot" style="width:7px;height:7px;background:var(--accent);display:inline-block;transform:rotate(45deg);border-radius:2px;margin-right:8px;vertical-align:middle;"></span>Cllx Bots</div>
+    <div class="brand"><span class="dot" style="width:7px;height:7px;background:linear-gradient(135deg, var(--accent), var(--accent-2));display:inline-block;transform:rotate(45deg);border-radius:2px;margin-right:8px;vertical-align:middle;"></span>Cllx Bots</div>
     <div>Bots Discord sur mesure — développés et hébergés par Cailløux ϟ</div>
   </footer>
 
 </main>
+
+<script>
+  (function () {
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // scroll reveal
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in-view");
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+      document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in-view"); });
+    }
+
+    // mouse-tracked spotlight on cards
+    document.querySelectorAll(".spot").forEach(function (el) {
+      el.addEventListener("mousemove", function (ev) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", ((ev.clientX - r.left) / r.width * 100) + "%");
+        el.style.setProperty("--my", ((ev.clientY - r.top) / r.height * 100) + "%");
+      });
+    });
+  })();
+</script>
+
 </body>
 </html>
